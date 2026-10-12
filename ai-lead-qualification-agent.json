@@ -1,0 +1,560 @@
+{
+  "name": "ai-lead-qualification-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Workflow Discovery Application",
+        "formDescription": "Tell us about your business, the process you want to improve, and what you're hoping to achieve. Your responses will be reviewed to determine whether this offer is a good fit for a discovery call.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Business Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Business Category",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Agency"
+                  },
+                  {
+                    "option": "Consulting"
+                  },
+                  {
+                    "option": "Coaching"
+                  },
+                  {
+                    "option": "Professional Services"
+                  },
+                  {
+                    "option": "Healthcare / Wellness"
+                  },
+                  {
+                    "option": "Real Estate"
+                  },
+                  {
+                    "option": "E-commerce"
+                  },
+                  {
+                    "option": "Education / Training"
+                  },
+                  {
+                    "option": "Local Service Business"
+                  },
+                  {
+                    "option": "Software / SaaS"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What stage is your business currently in?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Actively operating"
+                  },
+                  {
+                    "option": "Pre-launch, actively preparing to launch"
+                  },
+                  {
+                    "option": "Early-stage planning or validating the business idea"
+                  },
+                  {
+                    "option": "Temporarily paused or not currently operating"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What repetitive process or operational challenge would you most like to improve?",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "How often does this process or challenge occur?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Multiple times per day"
+                  },
+                  {
+                    "option": "Daily"
+                  },
+                  {
+                    "option": "Several times per week"
+                  },
+                  {
+                    "option": "Weekly"
+                  },
+                  {
+                    "option": "Several times per month"
+                  },
+                  {
+                    "option": "Monthly"
+                  },
+                  {
+                    "option": "Less than monthly"
+                  },
+                  {
+                    "option": "Varies significantly"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What impact is this having on your business right now?",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What would a successful outcome look like for you?",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What investment range have you set aside for this project?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Under $1,000"
+                  },
+                  {
+                    "option": "$1,000–$2,999"
+                  },
+                  {
+                    "option": "$3,000–$4,999"
+                  },
+                  {
+                    "option": "$5,000–$9,999"
+                  },
+                  {
+                    "option": "$10,000+"
+                  },
+                  {
+                    "option": "Not sure yet"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What best describes your role in approving this investment?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "I can approve the investment"
+                  },
+                  {
+                    "option": "I share the decision with someone else"
+                  },
+                  {
+                    "option": "I can recommend it, but someone else approves"
+                  },
+                  {
+                    "option": "I’m gathering information for someone else"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "When would you ideally like to implement this?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Within 30 days"
+                  },
+                  {
+                    "option": "31–60 days"
+                  },
+                  {
+                    "option": "61–90 days"
+                  },
+                  {
+                    "option": "More than 90 days"
+                  },
+                  {
+                    "option": "Not sure yet"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Is there anything else you’d like us to know?",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1d505100-4823-41b6-84d6-264b427698f4",
+      "name": "AI Workflow Discovery Application",
+      "webhookId": "878cac93-9e5e-4de6-92f7-7418576ae6e3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "AI Lead Qualification Agent - Leads"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name",
+          "cachedResultName": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_name",
+              "displayName": "business_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_type",
+              "displayName": "business_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "operating_status",
+              "displayName": "operating_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "problem",
+              "displayName": "problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "frequency",
+              "displayName": "frequency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_impact",
+              "displayName": "business_impact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "desired_outcome",
+              "displayName": "desired_outcome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision_authority",
+              "displayName": "decision_authority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timeline",
+              "displayName": "timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "additional_notes",
+              "displayName": "additional_notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recommended_next_action",
+              "displayName": "recommended_next_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "3d258c26-57bb-42f4-a8e6-70d2839a1886",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7feb208-b7ee-4422-900f-30ede5c240b6",
+              "name": "name",
+              "value": "= {{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "2ac4fd56-30e0-43c4-b143-075b96bdb625",
+              "name": "email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "04f58acb-995e-49f0-9408-afb48955c4de",
+              "name": "business_name",
+              "value": "={{ $json[\"Business Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "37dfa782-2b81-4437-a493-32eaad27353a",
+              "name": "business_type",
+              "value": "={{ $json[\"Business Category\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "215c6caa-2a8a-45d9-88df-ab2ee1ca7be1",
+              "name": "operating_status",
+              "value": "={{ $json[\"What stage is your business currently in?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f82dc88a-4233-479a-99cb-e28ce4b7429a",
+              "name": "problem",
+              "value": "={{ $json[\"What repetitive process or operational challenge would you most like to improve?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "d9c3d4be-d631-4b25-b405-4bc4021f2f91",
+              "name": "frequency",
+              "value": "={{ $json[\"How often does this process or challenge occur?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "47ff5e55-8d72-4c82-9d82-d93aac1f142c",
+              "name": "business_impact",
+              "value": "={{ $json[\"What impact is this having on your business right now?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8ce5e4e9-8fd3-43d8-ab73-e666910c6319",
+              "name": "desired_outcome",
+              "value": "={{ $json[\"What would a successful outcome look like for you?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "5334497e-e7e0-40be-928d-baa9634b31ff",
+              "name": "budget",
+              "value": "={{ $json[\"What investment range have you set aside for this project?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "97c6d56a-590a-4ed4-9ad4-a6e24142b015",
+              "name": "decision_authority",
+              "value": "={{ $json[\"What best describes your role in approving this investment?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "b96e47a6-9bd4-4b61-841a-3e62b119493d",
+              "name": "timeline",
+              "value": "={{ $json[\"When would you ideally like to implement this?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "225b0c31-8b95-4c57-9e9d-b93a1653e83d",
+              "name": "additional_notes",
+              "value": "={{ $json[\"Is there anything else you’d like us to know?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e54f69eb-3b2e-4a3f-b572-3463f3441774",
+              "name": "timestamp",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "b2394dbf-b7fe-4329-b6c0-f01fcf19705f",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Workflow Discovery Application": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0423904b-43c8-4fad-95b6-80a8ed2533a8",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "g58VwBvkZF6OuUQ2",
+  "tags": []
+}
