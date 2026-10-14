@@ -215,11 +215,381 @@
       "typeVersion": 2.6,
       "position": [
         0,
-        288
+        336
       ],
       "id": "1d505100-4823-41b6-84d6-264b427698f4",
       "name": "AI Workflow Discovery Application",
       "webhookId": "878cac93-9e5e-4de6-92f7-7418576ae6e3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7feb208-b7ee-4422-900f-30ede5c240b6",
+              "name": "name",
+              "value": "= {{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "2ac4fd56-30e0-43c4-b143-075b96bdb625",
+              "name": "email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "04f58acb-995e-49f0-9408-afb48955c4de",
+              "name": "business_name",
+              "value": "={{ $json[\"Business Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "37dfa782-2b81-4437-a493-32eaad27353a",
+              "name": "business_type",
+              "value": "={{ $json[\"Business Category\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "215c6caa-2a8a-45d9-88df-ab2ee1ca7be1",
+              "name": "operating_status",
+              "value": "={{ $json[\"What stage is your business currently in?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f82dc88a-4233-479a-99cb-e28ce4b7429a",
+              "name": "problem",
+              "value": "={{ $json[\"What repetitive process or operational challenge would you most like to improve?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "d9c3d4be-d631-4b25-b405-4bc4021f2f91",
+              "name": "frequency",
+              "value": "={{ $json[\"How often does this process or challenge occur?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "47ff5e55-8d72-4c82-9d82-d93aac1f142c",
+              "name": "business_impact",
+              "value": "={{ $json[\"What impact is this having on your business right now?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8ce5e4e9-8fd3-43d8-ab73-e666910c6319",
+              "name": "desired_outcome",
+              "value": "={{ $json[\"What would a successful outcome look like for you?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "5334497e-e7e0-40be-928d-baa9634b31ff",
+              "name": "budget",
+              "value": "={{ $json[\"What investment range have you set aside for this project?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "97c6d56a-590a-4ed4-9ad4-a6e24142b015",
+              "name": "decision_authority",
+              "value": "={{ $json[\"What best describes your role in approving this investment?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "b96e47a6-9bd4-4b61-841a-3e62b119493d",
+              "name": "timeline",
+              "value": "={{ $json[\"When would you ideally like to implement this?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "225b0c31-8b95-4c57-9e9d-b93a1653e83d",
+              "name": "additional_notes",
+              "value": "={{ $json[\"Is there anything else you’d like us to know?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e54f69eb-3b2e-4a3f-b572-3463f3441774",
+              "name": "timestamp",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        336
+      ],
+      "id": "b2394dbf-b7fe-4329-b6c0-f01fcf19705f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Evaluate this lead application for the AI Workflow Implementation Package.\n\nUse the submitted lead data below to decide whether the lead is:\n- qualified\n- not_qualified\n- human_review\n\nQualification guidance:\n- The business should be actively operating or clearly preparing to launch.\n- The lead should describe a real business process or operational problem that could plausibly benefit from automation.\n- Stronger fit generally means the problem happens repeatedly and has a meaningful business impact.\n- The current offer starts at $3,000, so budget should be considered seriously.\n- The lead should have meaningful involvement in approving the investment.\n- A timeline within 90 days is generally a stronger fit.\n- Use human_review when the application is ambiguous, contradictory, incomplete, or presents an edge case that should not be automatically accepted or rejected.\n- Do not invent facts that are not present in the application.\n\nReturn only the structured output required by the connected output parser.\n\nLead data:\nName: {{ $json.name }}\nEmail: {{ $json.email }}\nBusiness name: {{ $json.business_name }}\nBusiness type: {{ $json.business_type }}\nOperating status: {{ $json.operating_status }}\nProblem: {{ $json.problem }}\nFrequency: {{ $json.frequency }}\nBusiness impact: {{ $json.business_impact }}\nDesired outcome: {{ $json.desired_outcome }}\nBudget: {{ $json.budget }}\nDecision authority: {{ $json.decision_authority }}\nTimeline: {{ $json.timeline }}\nAdditional notes: {{ $json.additional_notes }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        208
+      ],
+      "id": "08763421-9cfb-4587-85a1-e989eb65c0b2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"decision\": {\n      \"type\": \"string\",\n      \"enum\": [\"qualified\", \"not_qualified\", \"human_review\"]\n    },\n    \"reason\": {\n      \"type\": \"string\"\n    },\n    \"confidence\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100\n    },\n    \"recommended_next_action\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"decision\",\n    \"reason\",\n    \"confidence\",\n    \"recommended_next_action\"\n  ],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        584,
+        440
+      ],
+      "id": "eaf79e16-33ed-40f0-a8f6-db9ee65c0e4c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-luna",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-luna"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        456,
+        440
+      ],
+      "id": "beb5fe69-d0fa-4941-829f-585206ec905d",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c43eea84-7b45-42e4-9911-19c21896bffc",
+              "name": "decision",
+              "value": "={{ $json.output.decision }}",
+              "type": "string"
+            },
+            {
+              "id": "401a71b8-fb2d-4b97-99fb-99cc479264a2",
+              "name": "reason",
+              "value": "={{ $json.output.reason }}",
+              "type": "string"
+            },
+            {
+              "id": "dc750b17-5aba-41ab-ab21-a1c09ac3249c",
+              "name": "confidence",
+              "value": "={{ $json.output.confidence }}",
+              "type": "number"
+            },
+            {
+              "id": "b6cfa601-ab64-42dd-ab68-a6e51ca1ace1",
+              "name": "recommended_next_action",
+              "value": "={{ $json.output.recommended_next_action }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "except",
+        "excludeFields": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1024,
+        336
+      ],
+      "id": "8664d9af-9e69-4314-85dc-5a70fbb9c704",
+      "name": "Prepare Final Lead Record"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        336
+      ],
+      "id": "f537b7fc-50f5-4294-8b21-09256278018c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "qualified",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6ada0ab6-9e19-4994-a325-ff5f6c1edc1c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "qualified"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a3b1efda-e314-494c-a4ff-b59a87fe7dab",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "not_qualified",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "not_qualified"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3993f9b3-9c70-4b59-9fb0-bd5390258ff1",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "human_review",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "human_review"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1472,
+        320
+      ],
+      "id": "59f77789-5954-41a4-9a15-19923f60e469",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff4932ca-e5bc-4ec4-aee8-5807d5351cc2",
+              "name": "route_action",
+              "value": "schedule_discovery_call",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1696,
+        144
+      ],
+      "id": "bd7f9307-8c1e-44b1-9cb6-a20e5fec91c5",
+      "name": "Qualified Action"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50915747-7c80-443d-b5e6-7ae97b3b76e6",
+              "name": "route_action",
+              "value": "decline_lead",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1696,
+        336
+      ],
+      "id": "4fdb25d1-553b-4cfd-a164-6cb4cf9c60c8",
+      "name": "Not Qualified Action"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "90098ea2-a304-4abc-830e-9cdf8599502a",
+              "name": "route_action",
+              "value": "manual_review",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1696,
+        528
+      ],
+      "id": "91cb3c30-0c66-4f52-a20e-5d72055048e9",
+      "name": "Human Review Action"
     },
     {
       "parameters": {
@@ -429,381 +799,11 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1392,
-        -32
-      ],
-      "id": "3d258c26-57bb-42f4-a8e6-70d2839a1886",
-      "name": "Append row in sheet"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "b7feb208-b7ee-4422-900f-30ede5c240b6",
-              "name": "name",
-              "value": "= {{ $json.Name }}",
-              "type": "string"
-            },
-            {
-              "id": "2ac4fd56-30e0-43c4-b143-075b96bdb625",
-              "name": "email",
-              "value": "={{ $json.Email }}",
-              "type": "string"
-            },
-            {
-              "id": "04f58acb-995e-49f0-9408-afb48955c4de",
-              "name": "business_name",
-              "value": "={{ $json[\"Business Name\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "37dfa782-2b81-4437-a493-32eaad27353a",
-              "name": "business_type",
-              "value": "={{ $json[\"Business Category\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "215c6caa-2a8a-45d9-88df-ab2ee1ca7be1",
-              "name": "operating_status",
-              "value": "={{ $json[\"What stage is your business currently in?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "f82dc88a-4233-479a-99cb-e28ce4b7429a",
-              "name": "problem",
-              "value": "={{ $json[\"What repetitive process or operational challenge would you most like to improve?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "d9c3d4be-d631-4b25-b405-4bc4021f2f91",
-              "name": "frequency",
-              "value": "={{ $json[\"How often does this process or challenge occur?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "47ff5e55-8d72-4c82-9d82-d93aac1f142c",
-              "name": "business_impact",
-              "value": "={{ $json[\"What impact is this having on your business right now?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "8ce5e4e9-8fd3-43d8-ab73-e666910c6319",
-              "name": "desired_outcome",
-              "value": "={{ $json[\"What would a successful outcome look like for you?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "5334497e-e7e0-40be-928d-baa9634b31ff",
-              "name": "budget",
-              "value": "={{ $json[\"What investment range have you set aside for this project?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "97c6d56a-590a-4ed4-9ad4-a6e24142b015",
-              "name": "decision_authority",
-              "value": "={{ $json[\"What best describes your role in approving this investment?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "b96e47a6-9bd4-4b61-841a-3e62b119493d",
-              "name": "timeline",
-              "value": "={{ $json[\"When would you ideally like to implement this?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "225b0c31-8b95-4c57-9e9d-b93a1653e83d",
-              "name": "additional_notes",
-              "value": "={{ $json[\"Is there anything else you’d like us to know?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "e54f69eb-3b2e-4a3f-b572-3463f3441774",
-              "name": "timestamp",
-              "value": "={{ $json.submittedAt }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        224,
-        288
-      ],
-      "id": "b2394dbf-b7fe-4329-b6c0-f01fcf19705f",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Evaluate this lead application for the AI Workflow Implementation Package.\n\nUse the submitted lead data below to decide whether the lead is:\n- qualified\n- not_qualified\n- human_review\n\nQualification guidance:\n- The business should be actively operating or clearly preparing to launch.\n- The lead should describe a real business process or operational problem that could plausibly benefit from automation.\n- Stronger fit generally means the problem happens repeatedly and has a meaningful business impact.\n- The current offer starts at $3,000, so budget should be considered seriously.\n- The lead should have meaningful involvement in approving the investment.\n- A timeline within 90 days is generally a stronger fit.\n- Use human_review when the application is ambiguous, contradictory, incomplete, or presents an edge case that should not be automatically accepted or rejected.\n- Do not invent facts that are not present in the application.\n\nReturn only the structured output required by the connected output parser.\n\nLead data:\nName: {{ $json.name }}\nEmail: {{ $json.email }}\nBusiness name: {{ $json.business_name }}\nBusiness type: {{ $json.business_type }}\nOperating status: {{ $json.operating_status }}\nProblem: {{ $json.problem }}\nFrequency: {{ $json.frequency }}\nBusiness impact: {{ $json.business_impact }}\nDesired outcome: {{ $json.desired_outcome }}\nBudget: {{ $json.budget }}\nDecision authority: {{ $json.decision_authority }}\nTimeline: {{ $json.timeline }}\nAdditional notes: {{ $json.additional_notes }}",
-        "hasOutputParser": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        448,
-        160
-      ],
-      "id": "08763421-9cfb-4587-85a1-e989eb65c0b2",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"decision\": {\n      \"type\": \"string\",\n      \"enum\": [\"qualified\", \"not_qualified\", \"human_review\"]\n    },\n    \"reason\": {\n      \"type\": \"string\"\n    },\n    \"confidence\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100\n    },\n    \"recommended_next_action\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"decision\",\n    \"reason\",\n    \"confidence\",\n    \"recommended_next_action\"\n  ],\n  \"additionalProperties\": false\n}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.3,
-      "position": [
-        592,
-        400
-      ],
-      "id": "eaf79e16-33ed-40f0-a8f6-db9ee65c0e4c",
-      "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-5.6-luna",
-          "mode": "list",
-          "cachedResultName": "gpt-5.6-luna"
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
-      "position": [
-        464,
-        400
-      ],
-      "id": "beb5fe69-d0fa-4941-829f-585206ec905d",
-      "name": "OpenAI Chat Model"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "c43eea84-7b45-42e4-9911-19c21896bffc",
-              "name": "decision",
-              "value": "={{ $json.output.decision }}",
-              "type": "string"
-            },
-            {
-              "id": "401a71b8-fb2d-4b97-99fb-99cc479264a2",
-              "name": "reason",
-              "value": "={{ $json.output.reason }}",
-              "type": "string"
-            },
-            {
-              "id": "dc750b17-5aba-41ab-ab21-a1c09ac3249c",
-              "name": "confidence",
-              "value": "={{ $json.output.confidence }}",
-              "type": "number"
-            },
-            {
-              "id": "b6cfa601-ab64-42dd-ab68-a6e51ca1ace1",
-              "name": "recommended_next_action",
-              "value": "={{ $json.output.recommended_next_action }}",
-              "type": "string"
-            }
-          ]
-        },
-        "includeOtherFields": true,
-        "include": "except",
-        "excludeFields": "output",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        1024,
-        288
-      ],
-      "id": "8664d9af-9e69-4314-85dc-5a70fbb9c704",
-      "name": "Prepare Final Lead Record"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        800,
-        288
-      ],
-      "id": "f537b7fc-50f5-4294-8b21-09256278018c",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.decision }}",
-                    "rightValue": "qualified",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "6ada0ab6-9e19-4994-a325-ff5f6c1edc1c"
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "qualified"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "a3b1efda-e314-494c-a4ff-b59a87fe7dab",
-                    "leftValue": "={{ $json.decision }}",
-                    "rightValue": "not_qualified",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "not_qualified"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "3993f9b3-9c70-4b59-9fb0-bd5390258ff1",
-                    "leftValue": "={{ $json.decision }}",
-                    "rightValue": "human_review",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "human_review"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
         1248,
-        272
+        336
       ],
-      "id": "59f77789-5954-41a4-9a15-19923f60e469",
-      "name": "Switch"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "ff4932ca-e5bc-4ec4-aee8-5807d5351cc2",
-              "name": "route_action",
-              "value": "schedule_discovery_call",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        1472,
-        192
-      ],
-      "id": "bd7f9307-8c1e-44b1-9cb6-a20e5fec91c5",
-      "name": "Qualified Action"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "50915747-7c80-443d-b5e6-7ae97b3b76e6",
-              "name": "route_action",
-              "value": "decline_lead",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        1472,
-        384
-      ],
-      "id": "4fdb25d1-553b-4cfd-a164-6cb4cf9c60c8",
-      "name": "Not Qualified Action"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "90098ea2-a304-4abc-830e-9cdf8599502a",
-              "name": "route_action",
-              "value": "manual_review",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        1472,
-        576
-      ],
-      "id": "91cb3c30-0c66-4f52-a20e-5d72055048e9",
-      "name": "Human Review Action"
+      "id": "12c9631e-2a7e-45e4-bf9c-4fbb6b825b3e",
+      "name": "Append row in sheet1"
     }
   ],
   "pinData": {},
@@ -872,7 +872,7 @@
       "main": [
         [
           {
-            "node": "Switch",
+            "node": "Append row in sheet1",
             "type": "main",
             "index": 0
           }
@@ -894,11 +894,6 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Qualified Action",
             "type": "main",
             "index": 0
@@ -919,6 +914,17 @@
           }
         ]
       ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -926,7 +932,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "32bbfbb1-b507-49b6-b329-a1c8f81723f0",
+  "versionId": "e06d6d92-b132-47e2-962d-4cad0ce2b569",
   "nodeGroups": [],
   "id": "g58VwBvkZF6OuUQ2",
   "tags": []
