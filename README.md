@@ -337,6 +337,8 @@ Opportunity moves to "Discovery Scheduled"
 
 The same HighLevel workflow can also be triggered if a lead is manually qualified later by a human.
 
+The HighLevel workflow will also notify the assigned user immediately when a lead receives either the `qualified` or `human-review` tag, so qualified opportunities and leads requiring human judgment are surfaced without manual checking.
+
 This is important because the system supports both:
 
 - Automatic AI qualification
