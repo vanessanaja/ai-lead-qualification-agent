@@ -1,228 +1,525 @@
 # AI Lead Qualification Agent
 
-An agentic lead qualification and CRM automation system built in n8n and HighLevel that evaluates inbound discovery applications, makes a bounded qualification decision, takes controlled CRM actions, logs the complete decision record, routes the lead through downstream logic, manages sales-pipeline progression, and supports automated discovery-call follow-up.
+An agentic lead-qualification workflow built with n8n, OpenAI, GoHighLevel, and Google Sheets.
 
-The project is designed around a fictional **AI Workflow Implementation Package starting at $3,000** for service-based businesses.
+The system evaluates inbound leads for a fictional AI workflow implementation service, makes a qualification decision, takes bounded CRM actions, creates sales opportunities for active leads, and preserves human judgment for ambiguous cases.
 
-The goal is not simply to classify leads with AI. The system demonstrates how an AI agent can operate safely inside a larger business workflow that spans intake, reasoning, structured output, CRM updates, pipeline progression, human review, automated follow-up, scheduling, and operational logging.
+This project was built to demonstrate practical AI implementation skills beyond basic prompt-and-response automation, including agent tool use, API integration, deterministic routing, structured output, CRM state management, human-in-the-loop workflows, and end-to-end testing.
 
-## What This System Does
+---
 
-A lead submits a discovery application through n8n.
+## What the System Does
 
-The Lead Qualification Agent evaluates the application using contextual business criteria including:
+A lead submits an application containing information about their business, operational problem, budget, authority, timeline, and desired outcome.
 
-- Business stage
-- Operational problem
-- Automation suitability
-- Frequency of the problem
-- Business impact
-- Desired outcome
-- Budget
-- Decision-making authority
-- Implementation timeline
-- Ambiguity or contradictory information
+The system then:
 
-The agent returns one of three structured outcomes:
+1. Normalizes the submitted lead data.
+2. Sends the application to an AI agent for evaluation.
+3. Classifies the lead as:
+   - `qualified`
+   - `human_review`
+   - `not_qualified`
+4. Uses AI-agent tools to:
+   - Create or update the contact in GoHighLevel.
+   - Add the appropriate qualification-status tag.
+5. Returns the exact GoHighLevel contact ID as part of the structured AI output.
+6. Merges the AI decision back with the original lead data.
+7. Logs the complete lead record and decision to Google Sheets.
+8. Uses deterministic n8n routing based on the qualification result.
+9. Creates a GoHighLevel opportunity for `qualified` and `human_review` leads.
+10. Uses native GoHighLevel workflows to handle opportunity routing and subsequent human decisions.
 
-- `qualified`
-- `not_qualified`
-- `human_review`
+The AI is responsible for judgment and bounded CRM tool use. Deterministic workflow logic handles logging, routing, opportunity creation, and downstream CRM state changes.
 
-It also returns:
+---
 
-- A written reason for the decision
-- A confidence score
-- A recommended next action
-
-The agent then uses tightly scoped HighLevel API tools to:
-
-1. Create or update the lead as a HighLevel contact
-2. Reuse the returned HighLevel contact ID
-3. Add the qualification-status tag that matches the agent's decision
-4. Preserve any unrelated tags already associated with the contact
-
-The workflow then:
-
-5. Merges the original lead data with the AI-generated decision
-6. Logs the complete lead record and qualification result to Google Sheets
-7. Routes the lead through deterministic n8n workflow branches
-8. Creates or updates the corresponding HighLevel opportunity
-9. Moves the opportunity into the appropriate sales pipeline stage
-10. Supports human review when the AI should not make an automatic decision
-11. Uses native HighLevel workflows for discovery-call follow-up and scheduling
-
-This project demonstrates practical experience with:
-
-- AI agents
-- Tool calling
-- Structured LLM output
-- JSON Schema
-- REST APIs
-- Bearer-token authentication
-- CRM integration
-- HighLevel Private Integrations
-- Contact management
-- Tag management
-- Opportunity management
-- Sales pipeline automation
-- Native CRM workflows
-- Human-in-the-loop design
-- Conditional routing
-- Google Sheets logging
-- Google OAuth
-- Secure credential handling
-- API debugging
-- Workflow testing
-- Docker
-- Git
-- GitHub
-- VS Code
-
-## System Architecture
+## Architecture
 
 ```text
-n8n Discovery Form
-        ↓
-Data Normalization
-        ↓
-Lead Qualification Agent
-   ├── OpenAI Chat Model
-   ├── Structured Output Parser
-   ├── HighLevel Contact Upsert Tool
-   └── HighLevel Qualification Tag Tool
-        ↓
-Merge Original Lead Data + AI Decision
-        ↓
-Prepare Final Lead Record
-        ↓
-Google Sheets Logging
-        ↓
-Decision Routing
-   ├── qualified
-   ├── not_qualified
-   └── human_review
-        ↓
-HighLevel CRM Actions
-   ├── Contact Management
-   ├── Qualification Tagging
-   ├── Opportunity Creation / Update
-   └── Pipeline Stage Management
-        ↓
-HighLevel Native Workflows
-   ├── Discovery-call scheduling email
-   ├── Manual qualification follow-up
-   └── Discovery Scheduled progression
+Lead Application Form
+        |
+        v
+    Edit Fields
+        |
+        +-----------------------------+
+        |                             |
+        v                             |
+Lead Qualification Agent             |
+        |                             |
+        |  OpenAI Chat Model          |
+        |  Structured Output Parser   |
+        |  Upsert HighLevel Contact   |
+        |  Add Qualification Tag      |
+        |                             |
+        +-------------+---------------+
+                      |
+                      v
+          Merge Lead Data + AI Decision
+                      |
+                      v
+             Prepare Final Lead Record
+                      |
+                      v
+             Log Lead to Google Sheets
+                      |
+                      v
+          Route by Qualification Decision
+               /          |          \
+              /           |           \
+       qualified     human_review   not_qualified
+            \             /              |
+             \           /               v
+              v         v        Not Qualified Action
+          Create Active
+         Lead Opportunity
+              |
+              v
+        GoHighLevel CRM
 ```
 
-The system deliberately separates:
+GoHighLevel then handles the CRM lifecycle through native workflows.
 
-**AI judgment**
+---
 
-from
+## AI Agent Responsibilities
 
-**deterministic operational control**
+The `Lead Qualification Agent` performs the parts of the system that require judgment.
 
-The AI handles contextual reasoning and tightly scoped tool use.
+It evaluates factors including:
 
-n8n handles normalization, merging, logging, branching, and controlled execution.
-
-HighLevel handles CRM state, opportunity progression, pipeline management, and native follow-up automation.
-
-Google Sheets provides an external audit trail of submitted leads and AI decisions.
-
-## Current Workflow
-
-The current workflow:
-
-1. Accepts an application through an n8n discovery form
-2. Collects business, operational, budget, authority, and timeline information
-3. Normalizes the form submission into consistent internal field names
-4. Sends the application to the Lead Qualification Agent
-5. Evaluates the application using business-fit criteria and contextual judgment
-6. Returns a structured qualification decision
-7. Creates or updates the lead as a contact in HighLevel
-8. Uses the returned HighLevel contact ID to add the matching qualification tag
-9. Preserves existing HighLevel tags
-10. Merges the original lead data with the AI-generated decision
-11. Logs the complete lead record and AI decision to Google Sheets
-12. Routes the lead into the appropriate deterministic workflow branch
-
-HighLevel opportunity creation, pipeline-stage movement, and discovery-call follow-up are being added as the next layer of the system.
-
-## Qualification Logic
-
-The agent evaluates factors including:
-
-- Whether the business is actively operating or clearly preparing to launch
-- Whether the lead describes a real business process or operational problem
-- Whether the process could plausibly benefit from automation
-- How frequently the problem occurs
-- The current business impact
-- The desired outcome
-- Budget relative to the $3,000 starting investment
-- The lead's involvement in approving the investment
-- Implementation timeline
-- Ambiguity, contradictions, or unusual circumstances
+- Whether the business is operating or preparing to launch.
+- Whether the lead describes a real operational problem.
+- Whether that problem could plausibly benefit from automation.
+- How frequently the problem occurs.
+- Its business impact.
+- Budget relative to the fictional $3,000 starting price.
+- Decision-making authority.
+- Implementation timeline.
+- Ambiguous, incomplete, or contradictory information.
 
 The agent is instructed not to invent information that is not present in the application.
 
+---
+
+## Structured Output
+
+The agent must return:
+
+```json
+{
+  "decision": "qualified | not_qualified | human_review",
+  "reason": "string",
+  "confidence": 0,
+  "recommended_next_action": "string",
+  "highlevel_contact_id": "string"
+}
+```
+
+A Structured Output Parser enforces the schema before downstream processing.
+
+---
+
+## Agentic CRM Tool Use
+
+This project intentionally goes beyond using an LLM only as a classifier.
+
+The AI agent has access to bounded GoHighLevel tools and can take actions based on its decision.
+
+### Tool 1: Upsert HighLevel Contact
+
+The agent creates or updates the lead in GoHighLevel using the submitted:
+
+- Name
+- Email
+- Business name
+
+The contact source is recorded as:
+
+```text
+AI Lead Qualification Agent
+```
+
+Using an upsert operation prevents the workflow from blindly creating duplicate contacts when the same email is submitted again.
+
+### Tool 2: Add HighLevel Qualification Tag
+
+After the contact upsert succeeds, the agent uses the returned contact ID to add exactly one status tag:
+
+```text
+qualified
+human-review
+not-qualified
+```
+
+The tool adds the qualification tag without removing unrelated existing tags.
+
+This behavior was explicitly tested by placing an unrelated tag on an existing contact, resubmitting the lead, and confirming that both the existing tag and the new qualification tag remained.
+
+### Returning the CRM Contact ID
+
+The agent must return the exact contact ID produced by the contact-upsert tool.
+
+That ID is then passed through the rest of the n8n workflow and used when creating the GoHighLevel opportunity.
+
+---
+
+## Separation of AI Judgment and Deterministic Logic
+
+A key design decision in this project is that the AI does not control every part of the system.
+
+The agent handles:
+
+- Lead evaluation.
+- Qualification reasoning.
+- Contact creation/update.
+- Qualification tagging.
+
+n8n handles deterministic operations such as:
+
+- Data merging.
+- Flattening structured output.
+- Google Sheets logging.
+- Qualification routing.
+- Opportunity creation.
+
+GoHighLevel native workflows handle:
+
+- Opportunity stage movement.
+- Human-review notifications.
+- Manual qualification outcomes.
+- Lost opportunity status.
+
+This keeps probabilistic AI reasoning limited to tasks where judgment is actually useful while using predictable workflow logic for operations that should behave consistently.
+
+---
+
 ## Qualification Outcomes
 
-### `qualified`
+### Qualified
 
-Used when the application represents a strong fit for the offer.
-
-The HighLevel contact receives:
+A qualified lead receives the:
 
 ```text
 qualified
 ```
 
-A qualified lead will also enter the HighLevel sales process and trigger the discovery-call follow-up workflow.
+tag.
 
-### `not_qualified`
-
-Used when the application clearly does not meet the current offer criteria.
-
-The HighLevel contact receives:
+n8n creates an open opportunity in the dedicated:
 
 ```text
-not-qualified
+AI Lead Qualification Agent
 ```
 
-A not-qualified lead does not progress through the active sales pipeline.
+pipeline.
 
-### `human_review`
+The opportunity initially enters:
 
-Used when the application is ambiguous, contradictory, incomplete, or presents an edge case that should not be automatically accepted or rejected.
+```text
+New Lead
+```
 
-The HighLevel contact receives:
+A GoHighLevel workflow detects that the newly created opportunity belongs to a contact with the `qualified` tag and moves it to:
+
+```text
+Qualified
+```
+
+### Human Review
+
+An ambiguous lead receives:
 
 ```text
 human-review
 ```
 
-This creates an explicit human-in-the-loop path rather than forcing the model to make a decision when the available information is insufficient.
+The lead is still considered active, so n8n creates an opportunity in:
 
-A human can later review the lead and manually qualify it if appropriate.
-
-## Structured AI Output
-
-The Lead Qualification Agent returns a strict structured object containing:
-
-```json
-{
-  "decision": "qualified | not_qualified | human_review",
-  "reason": "Explanation of the decision",
-  "confidence": 0,
-  "recommended_next_action": "Recommended next step"
-}
+```text
+New Lead
 ```
 
-The output is constrained with a JSON Schema.
+A GoHighLevel workflow detects the `human-review` tag and reaches an internal notification action so a person can review the lead.
 
-The `decision` field can contain only:
+The opportunity remains active while the human decision is pending.
+
+### Not Qualified
+
+A lead confidently classified as not qualified receives:
+
+```text
+not-qualified
+```
+
+No active sales opportunity is created automatically for this outcome.
+
+This prevents clearly disqualified leads from cluttering the active sales pipeline.
+
+---
+
+## Human-in-the-Loop Decision Handling
+
+Human review is treated as a real workflow state rather than a dead-end classification.
+
+If a lead initially receives:
+
+```text
+human-review
+```
+
+a person can later make the final decision directly in GoHighLevel.
+
+### Human Approves the Lead
+
+The reviewer manually adds:
+
+```text
+qualified
+```
+
+A separate GoHighLevel workflow then:
+
+```text
+Qualified Tag Added
+        |
+        v
+Was Human Review?
+        |
+       Yes
+        |
+        v
+Find Lead Opportunity
+        |
+        v
+Opportunity Found
+        |
+        v
+Move Reviewed Lead to Qualified
+```
+
+The workflow verifies that the contact also has the `human-review` tag so that normal AI-qualified leads do not accidentally enter the manual-review workflow.
+
+The existing opportunity is located in the `AI Lead Qualification Agent` pipeline and moved to:
+
+```text
+Qualified
+```
+
+This path was tested successfully.
+
+### Human Rejects the Lead
+
+The reviewer can instead add:
+
+```text
+not-qualified
+```
+
+A separate workflow performs the same human-review verification and opportunity lookup, then updates the opportunity status to:
+
+```text
+Lost
+```
+
+The opportunity record and history are preserved without leaving the lead in the active pipeline.
+
+This path was also tested successfully.
+
+---
+
+## GoHighLevel Pipeline
+
+The project uses a dedicated pipeline:
+
+```text
+AI Lead Qualification Agent
+```
+
+Stages:
+
+```text
+New Lead
+Qualified
+Discovery scheduled
+Proposal sent
+```
+
+The qualification decision and the sales pipeline stage are intentionally treated as separate concepts.
+
+For example:
+
+- `human_review` is a qualification state.
+- `New Lead` is a sales pipeline stage.
+- `qualified` is a qualification result.
+- `Qualified` is the corresponding pipeline stage after the lead is accepted.
+
+This separation makes the system easier to reason about and prevents AI classification state from being conflated with sales progression.
+
+---
+
+## GoHighLevel Native Workflows
+
+The CRM side uses three native GoHighLevel workflows.
+
+### 1. AI Lead Qualification - Opportunity Routing
+
+Trigger:
+
+```text
+Opportunity Created
+```
+
+Filtered to:
+
+```text
+AI Lead Qualification Agent
+```
+
+pipeline.
+
+The workflow checks the contact's qualification tag.
+
+If:
+
+```text
+qualified
+```
+
+the opportunity is moved to:
+
+```text
+Qualified
+```
+
+If:
+
+```text
+human-review
+```
+
+the opportunity remains in:
+
+```text
+New Lead
+```
+
+and an internal notification action is triggered for human review.
+
+---
+
+### 2. AI Lead Qualification - Manual Review Qualified
+
+Trigger:
+
+```text
+qualified tag added
+```
+
+The workflow then verifies:
+
+```text
+Tags includes human-review
+```
+
+If true:
+
+1. Find the most recently created opportunity for the contact in the `AI Lead Qualification Agent` pipeline.
+2. If an opportunity is found, move it to the `Qualified` stage.
+
+This prevents normal AI-qualified leads from entering the manual-review path.
+
+---
+
+### 3. AI Lead Qualification - Manual Review Not Qualified
+
+Trigger:
+
+```text
+not-qualified tag added
+```
+
+The workflow verifies:
+
+```text
+Tags includes human-review
+```
+
+If true:
+
+1. Find the most recently created opportunity for the contact in the `AI Lead Qualification Agent` pipeline.
+2. If an opportunity is found, update its status to:
+
+```text
+Lost
+```
+
+This removes the opportunity from the active sales pipeline while preserving its history.
+
+---
+
+## Google Sheets Audit Log
+
+Every evaluated lead is logged to Google Sheets.
+
+The audit log captures both submitted data and AI decision data, including:
+
+- Timestamp
+- Name
+- Email
+- Business name
+- Business type
+- Operating status
+- Problem
+- Frequency
+- Business impact
+- Desired outcome
+- Budget
+- Decision authority
+- Timeline
+- Additional notes
+- Decision
+- Reason
+- Confidence
+- Recommended next action
+- HighLevel contact ID
+
+This provides a simple audit trail for reviewing how the agent evaluated leads and what downstream CRM record was used.
+
+---
+
+## Example Qualification Logic
+
+The fictional offer used for the project is:
+
+```text
+AI Workflow Implementation Package
+Starting at $3,000
+```
+
+Stronger-fit leads generally have:
+
+- An active business or a business clearly preparing to launch.
+- A real repetitive operational problem.
+- Meaningful business impact.
+- A process that occurs regularly.
+- Budget consistent with the offer.
+- Meaningful decision authority.
+- A timeline within approximately 90 days.
+
+The agent uses:
+
+```text
+human_review
+```
+
+when information is ambiguous, contradictory, incomplete, or presents an edge case that should not be automatically accepted or rejected.
+
+---
+
+## Why Use an Agent Here?
+
+A simple classifier could return:
 
 ```text
 qualified
@@ -230,442 +527,249 @@ not_qualified
 human_review
 ```
 
-Confidence is constrained to an integer from 0 to 100.
+but that alone would not make the system agentic.
 
-Structured output makes the AI decision predictable and safe to use in downstream automation.
+In this project, the agent can:
 
-## Agent Tool Use
+1. Evaluate the lead.
+2. Decide the qualification outcome.
+3. Select and call the appropriate CRM tools.
+4. Create or update the GoHighLevel contact.
+5. Capture the real CRM contact ID returned by the tool.
+6. Use that returned ID in a subsequent tagging tool call.
+7. Return the result in a strict structured format for deterministic downstream processing.
 
-The Lead Qualification Agent currently has two tightly scoped HighLevel API tools.
+The agent therefore combines reasoning with bounded external actions while the surrounding automation maintains control over predictable business logic.
 
-### HighLevel Contact Upsert
+---
 
-The agent can create a new contact or update an existing HighLevel contact using:
+## Key Design Decisions
 
-- Name
-- Email
-- Business name
-- Fixed source attribution
+### AI Does Not Create Opportunities Directly
 
-The agent is instructed to use submitted lead data exactly as provided rather than inventing contact information.
+Opportunity creation is deterministic once the qualification outcome is known.
 
-The HighLevel API returns a contact ID that is then used by the second tool.
+Rather than giving the agent another tool for this predictable operation, n8n creates the opportunity after the qualification branch.
 
-### HighLevel Qualification Tagging
+This reduces unnecessary AI autonomy and makes the workflow easier to debug.
 
-After receiving the HighLevel contact ID, the agent calls a separate HighLevel Add Tags endpoint.
+### Human Review Is an Active CRM State
 
-The tool adds exactly one qualification-status tag:
+`human_review` does not simply stop the automation.
 
-```text
-qualified
-human-review
-not-qualified
-```
+The system creates an opportunity, surfaces the lead for human judgment, and supports both later approval and rejection.
 
-The tagging operation intentionally uses HighLevel's dedicated tag endpoint rather than including tags in the contact update.
+### Existing Tags Are Preserved
 
-This preserves unrelated tags already associated with the contact.
+Qualification tagging is additive.
 
-Testing confirmed that an existing unrelated tag remained on the contact after the agent added the qualification tag.
+The agent is explicitly instructed not to remove or replace unrelated CRM tags.
 
-## Bounded Agent Design
+### Not-Qualified Leads Do Not Create Active Opportunities
 
-The agent is intentionally not given unrestricted CRM access.
+Clearly rejected leads are logged and tagged but do not enter the active sales pipeline.
 
-Its autonomy is bounded to specific approved actions:
+### AI Output Is Flattened Before Downstream Processing
 
-- Evaluate a submitted lead
-- Select one of three qualification outcomes
-- Create or update the corresponding HighLevel contact
-- Add one qualification-status tag
+The structured AI response is converted into top-level fields before logging and routing.
 
-It cannot freely perform arbitrary actions inside HighLevel.
-
-This creates a safer pattern for business AI implementation by separating contextual reasoning from controlled operational execution.
-
-## HighLevel Sales Pipeline
-
-The CRM side of the system uses a dedicated HighLevel pipeline representing the actual sales process.
-
-The pipeline stages are:
+This keeps downstream nodes simple and makes values such as:
 
 ```text
-New Lead
-Qualified
-Discovery Scheduled
-Proposal Sent
-```
-
-Qualification status and pipeline stage are intentionally treated as separate concepts.
-
-For example:
-
-- `qualified` is an AI qualification outcome and contact tag
-- `Qualified` is a sales pipeline stage
-- `human_review` is an evaluation state, not a sales stage
-- `not_qualified` is a qualification result, not a sales stage
-
-The system is being designed so that:
-
-- A newly submitted lead can exist in `New Lead`
-- A qualified lead moves into `Qualified`
-- A lead that books a discovery call moves into `Discovery Scheduled`
-- A lead that reaches the proposal stage moves into `Proposal Sent`
-
-Opportunity creation and pipeline-stage movement will be managed through HighLevel CRM actions.
-
-## Automated Discovery-Call Follow-Up
-
-Qualified leads will automatically enter a native HighLevel follow-up workflow.
-
-The planned process is:
-
-```text
-Lead Qualification Agent
-        ↓
-Lead receives "qualified" tag
-        ↓
-HighLevel Workflow Trigger
-        ↓
-Discovery-call scheduling email is sent
-        ↓
-Lead books discovery call
-        ↓
-Opportunity moves to "Discovery Scheduled"
-```
-
-The same HighLevel workflow can also be triggered if a lead is manually qualified later by a human.
-
-The HighLevel workflow will also notify the assigned user immediately when a lead receives either the `qualified` or `human-review` tag, so qualified opportunities and leads requiring human judgment are surfaced without manual checking.
-
-This is important because the system supports both:
-
-- Automatic AI qualification
-- Human review and manual qualification
-
-while preserving the same downstream sales process.
-
-For example, a lead may initially receive:
-
-```text
-human-review
-```
-
-A human can later review the application and determine that the lead should move forward.
-
-Once that lead is manually marked as qualified, the same HighLevel scheduling workflow can send the discovery-call invitation and continue the normal pipeline progression.
-
-The AI agent does not send the email directly.
-
-HighLevel handles the scheduling email through a native workflow after the appropriate qualification condition is met.
-
-This keeps email communication and sales follow-up inside the CRM while limiting the permissions granted to the AI agent.
-
-## Human-in-the-Loop Design
-
-The workflow does not force every lead into a binary yes/no decision.
-
-The `human_review` outcome is used when the agent encounters:
-
-- Incomplete information
-- Conflicting information
-- Ambiguous budget or timing
-- Unusual business circumstances
-- Edge cases
-- Situations where automatic rejection would be too aggressive
-
-This provides a human escalation path.
-
-A reviewer can later:
-
-1. Evaluate the lead manually
-2. Decide whether the lead should be qualified
-3. Update the lead's HighLevel status
-4. Trigger the same downstream scheduling and pipeline process used for automatically qualified leads
-
-This allows the AI to assist with decision-making without becoming the sole authority for every case.
-
-## Google Sheets Logging
-
-Every application is logged before deterministic decision routing.
-
-The Google Sheet stores:
-
-```text
-timestamp
-name
-email
-business_name
-business_type
-operating_status
-problem
-frequency
-business_impact
-desired_outcome
-budget
-decision_authority
-timeline
-additional_notes
 decision
-reason
 confidence
-recommended_next_action
+highlevel_contact_id
 ```
 
-Logging before routing ensures that every evaluated lead is recorded regardless of qualification outcome.
+directly available to later nodes.
 
-This also creates an external decision history that can be reviewed independently of the CRM.
-
-## Discovery Form
-
-The n8n form collects:
-
-- Name
-- Email
-- Business name
-- Business category
-- Current operating stage
-- Repetitive process or operational challenge
-- Frequency of the challenge
-- Current business impact
-- Desired outcome
-- Available investment range
-- Decision-making authority
-- Desired implementation timeline
-- Additional context
-
-The form intentionally captures both structured qualification signals and open-text context so the agent can apply judgment rather than relying only on rigid scoring rules.
-
-## Tech Stack
-
-- **n8n** for orchestration and workflow execution
-- **OpenAI API / LLM** for lead evaluation and agent reasoning
-- **n8n AI Agent** for tool-using agent behavior
-- **Structured Output Parser / JSON Schema** for constrained AI responses
-- **HighLevel REST API** for CRM actions
-- **HighLevel Private Integration** for scoped API authentication
-- **HTTP Request Tools** for controlled agent API actions
-- **HighLevel Contacts** for lead records
-- **HighLevel Tags** for qualification status
-- **HighLevel Opportunities** for sales tracking
-- **HighLevel Pipelines** for sales-stage progression
-- **HighLevel Workflows** for native follow-up and scheduling automation
-- **Google Sheets API** for lead and decision logging
-- **Google Drive API**
-- **Google OAuth**
-- **Docker** for the local n8n environment
-- **Git**
-- **GitHub**
-- **VS Code**
+---
 
 ## Testing Completed
 
-The workflow has been tested with multiple qualification scenarios.
+The following behaviors were tested successfully:
 
-Completed testing includes:
+- Form submission.
+- Lead data normalization.
+- AI qualification.
+- `qualified` classification.
+- `human_review` classification.
+- `not_qualified` classification.
+- Structured output parsing.
+- GoHighLevel contact upsert.
+- Existing-contact updates.
+- Preservation of unrelated existing tags.
+- `qualified` tag application.
+- `human-review` tag application.
+- `not-qualified` tag application.
+- Returning and preserving the exact GoHighLevel contact ID.
+- Google Sheets logging.
+- Qualification routing in n8n.
+- GoHighLevel opportunity creation.
+- Automatic placement of new opportunities in `New Lead`.
+- Automatic movement of AI-qualified opportunities to `Qualified`.
+- Human-review CRM routing.
+- Human-review internal notification action.
+- Manual `human-review` to `qualified` transition.
+- Finding the correct existing opportunity from a contact-tag workflow.
+- Moving a manually approved lead to `Qualified`.
+- Manual `human-review` to `not-qualified` transition.
+- Marking a manually rejected opportunity as `Lost`.
+- Prevention of duplicate active opportunity creation for the same contact during testing.
+- Individual downstream-node testing without unnecessarily rerunning the AI agent.
 
-- Successful discovery-form submission
-- Data normalization
-- Qualified lead evaluation
-- Not-qualified lead evaluation
-- Human-review evaluation
-- Structured decision output
-- Confidence scoring
-- Decision reasoning
-- Recommended next action
-- Three-way Switch routing
-- Google Sheets logging before routing
-- HighLevel Private Integration authentication
-- HighLevel REST API authentication and troubleshooting
-- HighLevel contact creation
-- Existing-contact upsert
-- Retrieval and reuse of the HighLevel contact ID
-- Agent-controlled `qualified` tagging
-- Preservation of an unrelated existing HighLevel tag
-- Successful sequential agent tool use
+---
 
-Additional qualification-tag scenarios and full end-to-end regression testing are still planned.
+## Technology
+
+- n8n
+- OpenAI API
+- GPT-5.6 Luna
+- GoHighLevel
+- GoHighLevel REST API
+- Google Sheets
+- HTTP / REST
+- JSON
+- JSON Schema
+- Docker
+- Git
+- GitHub
+
+---
+
+## n8n Workflow Nodes
+
+The main workflow includes:
+
+```text
+AI Workflow Discovery Application
+Edit Fields
+Lead Qualification Agent
+OpenAI Chat Model
+Upsert HighLevel Contact
+Add HighLevel Qualification Tag
+Structured Output Parser
+Merge Lead Data + AI Decision
+Prepare Final Lead Record
+Log Lead to Google Sheets
+Route by Qualification Decision
+Create Active Lead Opportunity
+Not Qualified Action
+```
+
+The agent's tool nodes are connected through the n8n AI Agent tool interface rather than as ordinary sequential workflow nodes.
+
+---
 
 ## Security
 
-The project is designed so credentials and account-specific data are not stored in the public repository.
+The public workflow export is sanitized before being committed to GitHub.
 
-Security measures include:
+Secrets and account-specific identifiers are not intended to be included in the repository.
 
-- OpenAI credentials are stored in n8n rather than the workflow file
-- Google OAuth credentials are stored outside the repository
-- The HighLevel Private Integration token is stored as an n8n Bearer Auth credential
-- The HighLevel credential is restricted to the HighLevel API domain
-- HighLevel permissions are scoped to the API capabilities required by the project
-- The agent receives access only to predefined CRM actions
-- n8n credential references are removed from public workflow exports
-- n8n instance-specific metadata is removed before publication
-- The real Google Sheet ID is replaced with:
+Examples of sanitized values include:
 
-```text
-YOUR_GOOGLE_SHEET_ID
-```
+- API credentials
+- Bearer tokens
+- Google credentials
+- Google Sheet IDs
+- GoHighLevel location IDs
+- GoHighLevel pipeline IDs
+- Credential references
+- Instance-specific metadata
+- Test contact data
 
-- The real HighLevel Location ID is replaced with:
+The repository uses placeholders such as:
 
 ```text
 YOUR_GHL_LOCATION_ID
+YOUR_GHL_PIPELINE_ID
+YOUR_GOOGLE_SHEET_ID
 ```
 
-- Workflow exports are manually reviewed before being committed
-- Pinned or test data is checked for personal information
-- API keys and access tokens are never committed to GitHub
+where configuration is required.
 
-## Version 1 Status
+Credentials should be configured inside n8n rather than embedded directly in workflow JSON.
 
-### Working
+---
 
-- n8n discovery application form
-- Required input fields
-- Business and qualification data collection
-- Submission timestamp capture
-- Data normalization
-- OpenAI-powered Lead Qualification Agent
-- Qualification criteria and decision logic
-- Structured JSON Schema output
-- `qualified` outcome
-- `not_qualified` outcome
-- `human_review` outcome
-- Decision reasoning
-- Confidence score
-- Recommended next action
-- Original lead-data preservation
-- AI-output flattening
-- Google Sheets integration
-- Google OAuth integration
-- Automatic column mapping
-- Lead and AI-decision logging
-- Logging before decision routing
-- Three-way deterministic Switch routing
-- Qualified action path
-- Not-qualified action path
-- Human-review action path
-- HighLevel Private Integration authentication
-- HighLevel Bearer-token credential configuration
-- Restricted HighLevel API domain
-- Agent-controlled HighLevel contact creation
-- Agent-controlled existing-contact update
-- HighLevel contact-ID reuse between tools
-- Agent-controlled qualification tagging
-- Existing-tag preservation
-- Successful qualified-tag testing
-- Persistent local n8n environment using Docker
-- Sanitized GitHub workflow exports
-- Git and GitHub version control
+## Running Locally
 
-### Still to Add
+This project was developed using n8n running locally in Docker with a persistent volume.
 
-- Test `human-review` HighLevel tagging end to end
-- Test `not-qualified` HighLevel tagging end to end
-- HighLevel opportunity creation
-- HighLevel opportunity update logic
-- HighLevel pipeline-stage movement
-- Native HighLevel workflow triggered by qualification
-- Discovery-call scheduling email
-- Manual qualification trigger path
-- Automatic movement to `Discovery Scheduled` after booking
-- Invalid AI-output handling
-- Additional ambiguous and contradictory test cases
-- Full end-to-end regression testing
-- Final workflow cleanup and naming
-- Portfolio workflow screenshot
-- Final sanitized workflow export
-- Final documentation review
-- Setup and reproduction instructions
+Example:
 
-## Design Decisions
+```bash
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+```
 
-### AI for Judgment, Deterministic Logic for Control
+Then open:
 
-The model handles decisions that require contextual interpretation.
+```text
+http://localhost:5678
+```
 
-n8n handles predictable operations such as:
+---
 
-- Data normalization
-- Logging
-- Merging
-- Routing
-- Controlled downstream execution
+## Setup Overview
 
-### Structured Output Instead of Free-Form Responses
+To reproduce the project, you need:
 
-The agent returns a strict schema so downstream nodes do not need to interpret natural-language responses.
+- Docker
+- n8n
+- An OpenAI API account
+- A GoHighLevel sub-account or test account
+- A GoHighLevel Private Integration with the required scopes
+- Google Sheets access
+- Google OAuth configured in n8n
 
-### Human Review as a First-Class Outcome
+After importing the sanitized workflow:
 
-Ambiguous applications are not forced into a binary qualified/unqualified decision.
+1. Configure the OpenAI credential.
+2. Configure Google Sheets OAuth.
+3. Configure the GoHighLevel Bearer credential.
+4. Replace placeholder GoHighLevel IDs.
+5. Replace the placeholder Google Sheet ID.
+6. Recreate or connect the required GoHighLevel pipeline and native workflows.
+7. Run test leads through the workflow.
 
-The workflow explicitly supports escalation to human review.
+---
 
-### Restricted CRM Tool Access
+## Future Enhancements
 
-The agent receives narrow tools rather than broad access to HighLevel.
+Potential next steps include:
 
-This demonstrates a bounded-autonomy approach to business AI implementation.
+- Sending a discovery-call scheduling email after qualification.
+- Automatically moving an opportunity to `Discovery scheduled` after a booking occurs.
+- Moving an opportunity to `Proposal sent` after a proposal is created or sent.
+- Adding dedicated error-handling branches.
+- Adding retries for external API failures.
+- Adding explicit invalid-AI-output handling.
+- Expanding audit logging.
+- Adding Slack or email alerts for human-review leads.
+- Adding reporting on qualification rates and pipeline conversion.
 
-### Separate Tag Operation
+These are intentionally separate from the core workflow so the current project remains focused on qualification, CRM action, deterministic routing, and human-in-the-loop decision handling.
 
-Qualification tags are added with a dedicated HighLevel API action rather than through the contact-upsert request.
-
-This preserves pre-existing contact tags and reduces unintended CRM data changes.
-
-### Qualification Status and Pipeline Stage Are Separate
-
-The system intentionally distinguishes between:
-
-- The AI's qualification decision
-- The lead's current sales stage
-
-This prevents states such as `human_review` and `not_qualified` from being incorrectly modeled as stages in the active sales pipeline.
-
-### CRM-Native Email Automation
-
-The agent does not directly send discovery-call emails.
-
-Instead, qualification triggers a native HighLevel workflow that handles the scheduling communication.
-
-This keeps communication logic inside the CRM and limits the permissions granted to the AI agent.
-
-### AI and Human Qualification Share the Same Downstream Process
-
-A lead can become qualified either:
-
-- Automatically through the AI agent
-- Manually after human review
-
-Both paths can enter the same HighLevel workflow for scheduling and pipeline progression.
-
-This avoids duplicating follow-up logic and creates a consistent operational process.
+---
 
 ## Project Goal
 
-The goal of this project is to demonstrate how an AI agent can be integrated into a real business process without giving the model unrestricted control.
+The goal of this project is to demonstrate how an AI system can be integrated into a real business workflow without giving the model unnecessary control.
 
-The system combines:
+The project combines:
 
-- Contextual AI reasoning
-- Structured and validated model output
-- Tool calling
-- REST API integration
-- CRM actions
-- Contact management
-- Qualification tagging
-- Opportunity management
-- Sales pipeline automation
-- Human-in-the-loop escalation
-- Human override paths
-- Native CRM workflow automation
-- Discovery-call scheduling
-- Deterministic workflow control
-- Operational logging
-- Secure credential management
-- Testing and debugging
-- Version-controlled implementation
+- AI reasoning.
+- Structured LLM output.
+- Agent tool use.
+- CRM API integration.
+- Deterministic automation.
+- Human review.
+- Audit logging.
+- Pipeline management.
+- Secure credential handling.
+- Testing and troubleshooting.
 
-It is designed as a practical example of the type of AI automation and implementation work that can be applied to sales operations, client acquisition, lead management, internal workflows, and other business processes.
+The result is not just an AI classifier.
+
+It is an interconnected lead-processing system in which the AI makes bounded judgments and takes bounded actions while n8n and GoHighLevel handle the predictable operational workflow around those decisions.
