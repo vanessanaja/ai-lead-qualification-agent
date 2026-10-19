@@ -378,6 +378,8 @@ Every evaluated lead is logged with:
 
 This provides a searchable record of the original application, AI evaluation, and corresponding CRM contact.
 
+![Google Sheets AI audit log](assets/google-sheets-ai-audit-log.png)
+
 ---
 
 ## Testing Completed
