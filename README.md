@@ -34,6 +34,8 @@ not_qualified
 
 From there, n8n and GoHighLevel handle logging, CRM updates, opportunity creation, sales routing, nurture, appointment booking, and pipeline progression.
 
+![n8n lead qualification workflow](assets/n8n-lead-qualification-workflow.png)
+
 ---
 
 ## Architecture
@@ -218,6 +220,8 @@ For example:
 
 The final `Advise / Solution Call` stage reflects a consultative sales process in which the salesperson presents a tailored recommendation after discovery.
 
+![GoHighLevel sales pipeline](assets/highlevel-sales-pipeline.png)
+
 ---
 
 ## Human Review Workflows
@@ -230,6 +234,8 @@ If the contact has the `qualified` tag, the opportunity moves to `Qualified`.
 
 If the contact has the `human-review` tag, the opportunity remains in `New Lead` and enters the human-review path.
 
+![GoHighLevel opportunity routing workflow](assets/highlevel-opportunity-routing.png)
+
 ### AI Lead Qualification - Manual Review Qualified
 
 Triggered when `qualified` is manually added to a contact that previously received `human-review`.
@@ -239,6 +245,8 @@ The workflow:
 1. Confirms the human-review state
 2. Finds the existing opportunity
 3. Moves it to `Qualified`
+
+![GoHighLevel manual review qualified workflow](assets/highlevel-manual-review-qualified.png)
 
 ### AI Lead Qualification - Manual Review Not Qualified
 
@@ -290,6 +298,10 @@ Explains what happens during the discovery conversation and prepares the prospec
 
 Provides a final invitation to book the discovery call.
 
+![Discovery nurture workflow part 1](assets/highlevel-discovery-nurture-1.png)
+
+![Discovery nurture workflow part 2](assets/highlevel-discovery-nurture-2.png)
+
 ---
 
 ## Discovery Booking Workflow
@@ -319,6 +331,8 @@ When the prospect schedules:
 3. The opportunity moves to `Discovery scheduled`
 
 This creates an event-driven transition from nurture into the next sales stage as soon as the prospect books.
+
+![GoHighLevel discovery booked workflow](assets/highlevel-discovery-booked.png)
 
 ---
 
@@ -422,7 +436,7 @@ The main n8n workflow includes:
 
 ```text
 AI Workflow Discovery Application
-Edit Fields
+Normalize Lead Data
 Lead Qualification Agent
 OpenAI Chat Model
 Upsert HighLevel Contact
@@ -433,7 +447,7 @@ Prepare Final Lead Record
 Log Lead to Google Sheets
 Route by Qualification Decision
 Create Active Lead Opportunity
-Not Qualified Action
+Finalize Not Qualified Lead
 ```
 
 The two CRM tools connect directly to the n8n AI Agent tool interface.
