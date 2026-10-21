@@ -51,11 +51,11 @@ The structured response must contain exactly these fields:
 | --- | --- |
 | `decision` | `qualified`, `not_qualified`, or `human_review` |
 | `reason` | String |
-| `confidence` | Integer from 0 through 100 |
+| `confidence` | Number from 0 through 1 (inclusive)|
 | `recommended_next_action` | String |
 | `highlevel_contact_id` | Exact contact ID returned by the contact tool |
 
-The agent must also:
+The agent must also: 
 
 1. Send the submitted name, email, and business name to the contact tool without altering or inventing values.
 2. Use the contact ID returned by that tool for the tagging request.
