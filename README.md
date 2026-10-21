@@ -238,7 +238,7 @@ If the contact has the `human-review` tag, the opportunity remains in `New Lead`
 
 ### AI Lead Qualification - Manual Review Qualified
 
-Triggered when `qualified` is manually added to a contact that previously received `human-review`.
+Triggered when qualified is added to a contact that still has human-review.
 
 The workflow:
 
@@ -250,7 +250,7 @@ The workflow:
 
 ### AI Lead Qualification - Manual Review Not Qualified
 
-Triggered when `not-qualified` is manually added to a contact that previously received `human-review`.
+Triggered when not-qualified is added to a contact that still has human-review.
 
 The workflow:
 
@@ -338,17 +338,9 @@ This creates an event-driven transition from nurture into the next sales stage a
 
 ## Business Process Design
 
-The workflow uses each system for the part of the process it handles best.
-
-AI evaluates qualitative lead information and takes bounded CRM actions.
-
-n8n coordinates the application, AI response, logging, routing, and opportunity creation.
-
-GoHighLevel manages the ongoing sales lifecycle, including pipeline movement, nurture, appointments, and human review.
-
 The automated journey ends at discovery scheduling. From there, the salesperson evaluates fit during the call and decides whether to schedule an `Advise / Solution Call`.
 
-No-show handling, rescheduling, and post-discovery outcomes can be managed through appointment status, tags, opportunity status, and follow-up workflows without adding extra pipeline stages.
+No-shows, rescheduling, and post-discovery outcomes can be handled through appointment status, tags, opportunity status, and follow-up workflows, keeping the pipeline focused on meaningful sales progression.
 
 ---
 
@@ -495,13 +487,14 @@ To reproduce the project:
 1. Import the sanitized n8n workflow.
 2. Configure the OpenAI credential.
 3. Configure Google Sheets OAuth.
-4. Configure the GoHighLevel Bearer credential.
-5. Replace the placeholder GoHighLevel IDs.
-6. Replace the placeholder Google Sheet ID.
-7. Create the GoHighLevel pipeline.
-8. Recreate the GoHighLevel workflows.
-9. Create the discovery-call calendar.
-10. Run test leads through the system.
+4. Create a Google Sheet with a tab named Leads and column headers matching the fields listed in the Google Sheets Audit Log section.
+5. Configure the GoHighLevel Bearer credential.
+6. Replace the placeholder GoHighLevel IDs.
+7. Replace the placeholder Google Sheet ID.
+8. Create the GoHighLevel pipeline.
+9. Recreate the GoHighLevel workflows.
+10. Create the discovery-call calendar.
+11. Run test leads through the system.
 
 ---
 
@@ -515,26 +508,4 @@ Future additions could include:
 - Invalid-output handling
 - Reporting on qualification and conversion rates
 - Sales performance dashboards
-- CRM alerts for leads requiring human attention
-
----
-
-## Project Goal
-
-This project demonstrates how AI can operate inside a larger business system.
-
-It combines:
-
-- AI reasoning
-- Structured output
-- Agent tool use
-- CRM API integration
-- Deterministic automation
-- Human review
-- Sales nurture
-- Appointment automation
-- Audit logging
-- Pipeline management
-- Testing and troubleshooting
-
-The result is an interconnected lead qualification and sales workflow spanning n8n, OpenAI, GoHighLevel, and Google Sheets.
+- Structured AI evaluation suite for qualification consistency, edge cases, and expected outcomes

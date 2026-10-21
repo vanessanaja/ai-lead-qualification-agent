@@ -223,107 +223,6 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "b7feb208-b7ee-4422-900f-30ede5c240b6",
-              "name": "name",
-              "value": "= {{ $json.Name }}",
-              "type": "string"
-            },
-            {
-              "id": "2ac4fd56-30e0-43c4-b143-075b96bdb625",
-              "name": "email",
-              "value": "={{ $json.Email }}",
-              "type": "string"
-            },
-            {
-              "id": "04f58acb-995e-49f0-9408-afb48955c4de",
-              "name": "business_name",
-              "value": "={{ $json[\"Business Name\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "37dfa782-2b81-4437-a493-32eaad27353a",
-              "name": "business_type",
-              "value": "={{ $json[\"Business Category\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "215c6caa-2a8a-45d9-88df-ab2ee1ca7be1",
-              "name": "operating_status",
-              "value": "={{ $json[\"What stage is your business currently in?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "f82dc88a-4233-479a-99cb-e28ce4b7429a",
-              "name": "problem",
-              "value": "={{ $json[\"What repetitive process or operational challenge would you most like to improve?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "d9c3d4be-d631-4b25-b405-4bc4021f2f91",
-              "name": "frequency",
-              "value": "={{ $json[\"How often does this process or challenge occur?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "47ff5e55-8d72-4c82-9d82-d93aac1f142c",
-              "name": "business_impact",
-              "value": "={{ $json[\"What impact is this having on your business right now?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "8ce5e4e9-8fd3-43d8-ab73-e666910c6319",
-              "name": "desired_outcome",
-              "value": "={{ $json[\"What would a successful outcome look like for you?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "5334497e-e7e0-40be-928d-baa9634b31ff",
-              "name": "budget",
-              "value": "={{ $json[\"What investment range have you set aside for this project?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "97c6d56a-590a-4ed4-9ad4-a6e24142b015",
-              "name": "decision_authority",
-              "value": "={{ $json[\"What best describes your role in approving this investment?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "b96e47a6-9bd4-4b61-841a-3e62b119493d",
-              "name": "timeline",
-              "value": "={{ $json[\"When would you ideally like to implement this?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "225b0c31-8b95-4c57-9e9d-b93a1653e83d",
-              "name": "additional_notes",
-              "value": "={{ $json[\"Is there anything else you’d like us to know?\"] }}",
-              "type": "string"
-            },
-            {
-              "id": "e54f69eb-3b2e-4a3f-b572-3463f3441774",
-              "name": "timestamp",
-              "value": "={{ $json.submittedAt }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        224,
-        336
-      ],
-      "id": "b2394dbf-b7fe-4329-b6c0-f01fcf19705f",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
         "schemaType": "manual",
         "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"decision\": {\n      \"type\": \"string\",\n      \"enum\": [\"qualified\", \"not_qualified\", \"human_review\"]\n    },\n    \"reason\": {\n      \"type\": \"string\"\n    },\n    \"confidence\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100\n    },\n    \"recommended_next_action\": {\n      \"type\": \"string\"\n    },\n    \"highlevel_contact_id\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"decision\",\n    \"reason\",\n    \"confidence\",\n    \"recommended_next_action\",\n    \"highlevel_contact_id\"\n  ],\n  \"additionalProperties\": false\n}"
       },
@@ -405,29 +304,6 @@
       ],
       "id": "8664d9af-9e69-4314-85dc-5a70fbb9c704",
       "name": "Prepare Final Lead Record"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "50915747-7c80-443d-b5e6-7ae97b3b76e6",
-              "name": "route_action",
-              "value": "decline_lead",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [
-        1936,
-        480
-      ],
-      "id": "4fdb25d1-553b-4cfd-a164-6cb4cf9c60c8",
-      "name": "Not Qualified Action"
     },
     {
       "parameters": {
@@ -875,6 +751,130 @@
       ],
       "id": "42606cd9-ea1c-4f4b-aed6-538c4fd316b0",
       "name": "Create Active Lead Opportunity"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7feb208-b7ee-4422-900f-30ede5c240b6",
+              "name": "name",
+              "value": "= {{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "2ac4fd56-30e0-43c4-b143-075b96bdb625",
+              "name": "email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "04f58acb-995e-49f0-9408-afb48955c4de",
+              "name": "business_name",
+              "value": "={{ $json[\"Business Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "37dfa782-2b81-4437-a493-32eaad27353a",
+              "name": "business_type",
+              "value": "={{ $json[\"Business Category\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "215c6caa-2a8a-45d9-88df-ab2ee1ca7be1",
+              "name": "operating_status",
+              "value": "={{ $json[\"What stage is your business currently in?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f82dc88a-4233-479a-99cb-e28ce4b7429a",
+              "name": "problem",
+              "value": "={{ $json[\"What repetitive process or operational challenge would you most like to improve?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "d9c3d4be-d631-4b25-b405-4bc4021f2f91",
+              "name": "frequency",
+              "value": "={{ $json[\"How often does this process or challenge occur?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "47ff5e55-8d72-4c82-9d82-d93aac1f142c",
+              "name": "business_impact",
+              "value": "={{ $json[\"What impact is this having on your business right now?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8ce5e4e9-8fd3-43d8-ab73-e666910c6319",
+              "name": "desired_outcome",
+              "value": "={{ $json[\"What would a successful outcome look like for you?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "5334497e-e7e0-40be-928d-baa9634b31ff",
+              "name": "budget",
+              "value": "={{ $json[\"What investment range have you set aside for this project?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "97c6d56a-590a-4ed4-9ad4-a6e24142b015",
+              "name": "decision_authority",
+              "value": "={{ $json[\"What best describes your role in approving this investment?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "b96e47a6-9bd4-4b61-841a-3e62b119493d",
+              "name": "timeline",
+              "value": "={{ $json[\"When would you ideally like to implement this?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "225b0c31-8b95-4c57-9e9d-b93a1653e83d",
+              "name": "additional_notes",
+              "value": "={{ $json[\"Is there anything else you’d like us to know?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e54f69eb-3b2e-4a3f-b572-3463f3441774",
+              "name": "timestamp",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        336
+      ],
+      "id": "b2394dbf-b7fe-4329-b6c0-f01fcf19705f",
+      "name": "Normalize Lead Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50915747-7c80-443d-b5e6-7ae97b3b76e6",
+              "name": "route_action",
+              "value": "decline_lead",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1936,
+        480
+      ],
+      "id": "4fdb25d1-553b-4cfd-a164-6cb4cf9c60c8",
+      "name": "Finalize Not Qualified Lead"
     }
   ],
   "pinData": {},
@@ -883,25 +883,9 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Normalize Lead Data",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Lead Qualification Agent",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge Lead Data + AI Decision",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -994,7 +978,7 @@
         ],
         [
           {
-            "node": "Not Qualified Action",
+            "node": "Finalize Not Qualified Lead",
             "type": "main",
             "index": 0
           }
@@ -1018,6 +1002,22 @@
           }
         ]
       ]
+    },
+    "Normalize Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Lead Qualification Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Lead Data + AI Decision",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1025,7 +1025,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "5b28c715-9b4e-4964-a5e2-46460e55ccf2",
+  "versionId": "bd8c8d0d-f45f-4d00-ba0f-8422d8bcdfa5",
   "nodeGroups": [],
   "id": "g58VwBvkZF6OuUQ2",
   "tags": []
