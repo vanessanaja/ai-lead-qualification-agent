@@ -245,3 +245,15 @@ New results will be saved separately, for example:
 Future results can then be compared with the original baseline to identify improvements, regressions, and changes in decision consistency.
 
 Changes to test expectations will be documented separately from changes to agent behavior so improvements are not overstated.
+
+### TC-12 Acceptance Criteria Revision
+
+**Date:** October 23, 2026
+
+After reviewing TC-12 against the documented `production-v1` policy, the acceptable decisions were expanded from `not_qualified` to `not_qualified` or `human_review`.
+
+The policy permits human review for edge cases and does not require automatic rejection based on any single qualification factor.
+
+The original `baseline-01.json` remains unchanged at 11/12 passes. This revision reflects a clarification of test expectations, not an improvement in agent performance.
+
+Future regression tests will use the revised acceptance criteria.

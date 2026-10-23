@@ -353,7 +353,8 @@
     "additional_notes": "I am specifically looking for an AI project even if there is a simpler way to solve this."
   },
   "acceptable_decisions": [
-    "not_qualified"
+    "not_qualified",
+  "human_review"
   ],
   "required_reasoning_points": [
     "The stated problem has low business impact.",
